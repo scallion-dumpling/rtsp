@@ -2,13 +2,14 @@
 FROM ubuntu:20.04
 
 # Install OS dependencies
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    python3 python3-pip python3-gi gir1.2-gst-rtsp-server-1.0 \
-    gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav && \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \\
+    python3 python3-pip python3-gi gir1.2-gst-rtsp-server-1.0 \\
+    python3-dev libgirepository1.0-dev pkg-config \\
+    gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav && \\
     rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-RUN pip3 install pycryptodome pygobject
+# Install only the one Python package we actually need
+RUN pip3 install pycryptodome
 
 WORKDIR /app
 
