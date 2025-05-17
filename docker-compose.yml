@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  mi360-rtsp:
+    build: .
+    container_name: mi360-rtsp
+    restart: unless-stopped
+    ports:
+      - "8554:8554"
+    environment:
+      CAMERA_IP: "${CAMERA_IP}"
+      RTSP_PORT: "${RTSP_PORT}"
