@@ -1,26 +1,30 @@
-# Dockerfile for Mi360 P2P -> RTSP server with env-config
+# Dockerfile for Mi360 2K P2P→RTSP Python server
+
 FROM ubuntu:20.04
 
-# Install OS dependencies
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \\
-    python3 python3-pip python3-gi gir1.2-gst-rtsp-server-1.0 \\
-    python3-dev libgirepository1.0-dev pkg-config \\
-    gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav && \\
+# Install OS packages (including GStreamer RTSP bindings for Python)
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
+      python3 python3-pip python3-gi gir1.2-gst-rtsp-server-1.0 \
+      python3-dev libgirepository1.0-dev pkg-config \
+      gstreamer1.0-tools gstreamer1.0-plugins-base \
+      gstreamer1.0-plugins-good gstreamer1.0-libav && \
     rm -rf /var/lib/apt/lists/*
 
-# Install only the one Python package we actually need
+# Install the one Python package we need from PyPI
 RUN pip3 install pycryptodome
 
 WORKDIR /app
 
-# Copy application code
+# Copy our RTSP server script into the image
 COPY Mi360RtspServer.py ./
 
-# Default environment variables (can be overridden in Portainer or compose)
+# Environment variables (can be overridden in Portainer or docker-compose)
 ENV CAMERA_IP=192.168.1.42
 ENV RTSP_PORT=8554
 
-EXPOSE $RTSP_PORT
+# Expose the RTSP port
+EXPOSE ${RTSP_PORT}
 
-# Launch the RTSP server
+# Run the script directly (it reads CAMERA_IP and RTSP_PORT)
 CMD ["python3", "Mi360RtspServer.py"]
